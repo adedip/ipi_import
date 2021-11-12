@@ -1,0 +1,8 @@
+id,actor_id,name,description,state
+1,1,"BU Super Utenti","UT Nazionale",1
+2,2,"NORD OVEST","UT Nord-Ovest",1
+3,3,"NORD CENTRO"," UT Nord-Centro",1
+4,4,"NORD EST"," UT Nord-Est",1
+7,6,SARDEGNA," UT Sardegna",1
+8,45,"CENTRO SUD"," UT Centro Sud",1
+11,49,"CENTRO EST"," UT Centro Est",1

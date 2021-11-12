@@ -1,0 +1,111 @@
+id,name,region_id,code,odoo_id,state
+1,Ancona,1,AN,,1
+2,Macerata,1,MC,,1
+3,"Pesaro Urbino",1,PU,,1
+4,"Ascoli Piceno",1,AP,,1
+5,Alessandria,13,AL,,1
+6,Asti,13,AT,,1
+7,Biella,13,BI,,1
+8,Cuneo,13,CN,,1
+9,Novara,13,NO,,1
+10,Vercelli,13,VC,,1
+11,Torino,13,TO,,1
+12,Agrigento,11,AG,,1
+13,Caltanissetta,11,CL,,1
+14,Catania,11,CT,,1
+15,Enna,11,EN,,1
+16,Messina,11,ME,,1
+17,Palermo,11,PA,,1
+18,Ragusa,11,RG,,1
+19,Siracusa,11,SR,,1
+20,Trapani,11,TP,,1
+21,Catanzaro,7,CZ,,1
+22,Cosenza,7,CS,,1
+23,Crotone,7,KR,,1
+24,"Reggio Calabria",7,RC,,1
+25,"Vibo Valentia",7,VV,,1
+27,Matera,3,MT,,1
+28,Potenza,3,PZ,,1
+29,Bari,6,BA,,1
+30,Brindisi,6,BR,,1
+31,Foggia,6,FG,,1
+32,Lecce,6,LE,,1
+33,Taranto,6,TA,,1
+34,Avellino,8,AV,,1
+35,Benevento,8,BN,,1
+36,Caserta,8,CE,,1
+37,Napoli,8,NA,,1
+38,Salerno,8,SA,,1
+39,Frosinone,9,FR,,1
+40,Latina,9,LT,,1
+41,Rieti,9,RI,,1
+42,Roma,9,RM,,1
+43,Viterbo,9,VT,,1
+44,Chieti,2,CH,,1
+45,L'Aquila,2,AQ,,1
+46,Pescara,2,PE,,1
+47,Teramo,2,TE,,1
+48,Arezzo,12,AR,,1
+49,Firenze,12,FI,,1
+50,Grosseto,12,GR,,1
+51,Livorno,12,LI,,1
+52,Lucca,12,LU,,1
+53,"Massa Carrara",12,MS,,1
+54,Pisa,12,PI,,1
+55,Pistoia,12,PT,,1
+56,Siena,12,SI,,1
+57,Bologna,14,BO,,1
+58,Ferrara,14,FE,,1
+59,"Forlì Cesena",14,FC,,1
+60,Modena,14,MO,,1
+61,Parma,14,PR,,1
+62,Piacenza,14,PC,,1
+63,Ravenna,14,RA,,1
+64,"Reggio Emilia",14,RE,,1
+65,Rimini,14,RN,,1
+66,Belluno,17,BL,,1
+67,Padova,17,PD,,1
+68,Rovigo,17,RO,,1
+69,Treviso,17,TV,,1
+70,Venezia,17,VE,,1
+71,Verona,17,VR,,1
+72,Vicenza,17,VI,,1
+73,Gorizia,15,GO,,1
+74,Pordenone,15,PN,,1
+75,Udine,15,UD,,1
+76,Trieste,15,TS,,1
+77,Aosta,16,AO,,1
+78,Cagliari,10,CA,,1
+79,Nuoro,10,NU,,1
+80,Oristano,10,OR,,1
+81,Sassari,10,SS,,1
+82,Genova,18,GE,,1
+83,Imperia,18,IM,,1
+84,Savona,18,SV,,1
+85,"La Spezia",18,SP,,1
+86,Isernia,4,IS,,1
+87,Campobasso,4,CB,,1
+88,Perugia,20,PG,,1
+89,Terni,20,TR,,1
+90,Bergamo,19,BG,,1
+91,Brescia,19,BS,,1
+92,Como,19,CO,,1
+93,Cremona,19,CR,,1
+94,Lecco,19,LC,,1
+95,Lodi,19,LO,,1
+96,Mantova,19,MN,,1
+97,Milano,19,MI,,1
+98,Pavia,19,PV,,1
+99,Sondrio,19,SO,,1
+100,Varese,19,VA,,1
+101,Trento,5,TN,,1
+102,Bolzano,5,BZ,,1
+103,Prato,12,PO,,1
+104,Verbania,13,VB,,1
+105,"Carbonia Iglesias",10,CI,,1
+106,"Medio Campidano",10,VS,,1
+107,Ogliastra,10,OG,,1
+108,"Olbia Tempio",10,OT,,1
+109,Barletta-Andria-Trani,6,BT,,1
+110,"Monza Brianza",19,MB,,1
+112,Fermo,1,FM,,1

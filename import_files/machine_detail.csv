@@ -1,0 +1,16 @@
+id,machine_type_id,description
+1,1,Piattaforme
+2,1,Sollevatori
+3,1,Carro
+4,1,Scala
+5,1,Ponti
+6,2,Carrelli
+7,2,Idroestrattori
+8,2,Gru
+9,2,Autogru
+10,2,Altro
+11,3,"Recipienti Gas e vapore d'acqua"
+12,3,"Generatori di vapore con superficie riscaldata fino a 300 mq"
+13,3,"Generatori di vapore con superficie riscaldata oltre i 300 mq"
+14,3,Tubazioni
+15,3,"Impianti di Riscaladamento oltre 116 kW"

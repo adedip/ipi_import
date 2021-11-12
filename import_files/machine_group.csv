@@ -1,0 +1,20 @@
+id,machine_type_id,description,functional_audit_frequency_year,integrity_audit_frequency_year,integrity_check
+1,1,"Scale aeree ad inclinazione variabile ",1,NULL,0
+2,1,"Ponti mobili sviluppabili su carro ad azionamento motorizzato ",1,NULL,0
+3,0,"Ponti mobili sviluppabili su carro a sviluppo verticale e azionati a mano ",2,NULL,0
+4,0,"Ponti sospesi e relativi argani ",2,NULL,0
+5,0,"Ponti mobili sviluppabili su carro a sviluppo verticale e azionati a mano ",2,NULL,0
+6,0,"Ponti sospesi e relativi argani ",2,NULL,0
+7,0,"Idroestrattori a forza centrifuga di tipo discontinuo con diametro del paniere x numero di giri > 450 (m x giri/min.)",2,NULL,0
+8,0,"Idroestrattori a forza centrifuga di tipo continuo con diametro del paniere x numero di giri > 450 (m x giri/min.)",3,NULL,0
+9,0,"Idroestrattori a forza centrifuga operanti con solventi infiammabili o tali da dar luogo a miscele esplosive od instabili, aventi diametro esterno del paniere maggiore di 500 mm.",1,NULL,0
+10,0,"Carrelli semoventi a braccio telescopico",1,NULL,0
+11,0,"Piattaforme di lavoro autosollevanti su colonne",2,NULL,0
+12,0,"Ascensori e montacarichi da cantieri con cabina/piattaforma guidata verticalmente",1,NULL,0
+13,0,"Apparecchi di sollevamento materiali con portata superiore a 200 Kg. non azionati a mano, di tipo mobile o trasferibile, con modalità di utilizzo riscontrabili in settori di impiego quali costruzioni, siderurgico, portuale, estrattivo",1,NULL,0
+14,0,"Apparecchi di sollevamento materiali con portata superiore a 200 Kg. non azionati a mano, di tipo mobile o trasferibile, con modalità di utilizzo regolare e anno di fabbricazione non antecedente 10 anni",2,NULL,0
+15,0,"Apparecchi di sollevamento materiali con portata superiore a 200 Kg. non azionati a mano, di tipo mobile o trasferibile, con modalità di utilizzo regolare e anno di fabbricazione antecedente 10 anni",1,NULL,0
+16,0,"Apparecchi di sollevamento materiali con portata superiore a 200 Kg. non azionati a mano, di tipo fisso, con modalità di utilizzo riscontrabili in settori di impiego quali costruzioni, siderurgico, portuale, estrattivo e con anno di fabbricazione antecedente 10 anni",1,NULL,0
+17,0,"Apparecchi di sollevamento materiali con portata superiore a 200 Kg , non azionati a  mano, di tipo fisso, con modalità di utilizzo riscontrabili in settori di impiego quali costruzioni, siderurgico, portuale, estrattivo e con anno di fabbricazione non antecedente 10 anni",1,NULL,0
+18,0,"Apparecchi di sollevamento materiali con portata superiore a 200 Kg. non azionati a  mano, di tipo fisso, con modalità di utilizzo regolare e anno di fabbricazione antecedente 10 anni",1,NULL,0
+19,0,"Apparecchi di sollevamento materiali con portata superiore a 200 Kg. non azionati a  mano, di tipo fisso, con modalità di utilizzo regolare e anno di fabbricazione non antecedente 10 anni",3,NULL,0
