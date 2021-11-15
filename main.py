@@ -49,7 +49,7 @@ def import_data():
     # GeoLocation(CLIENT, company).map_regions()
     # GeoLocation(CLIENT, company).map_provinces()
     # import utenti >> da Odoo
-    # ResPartner(CLIENT, company).import_data()
+    ResPartner(CLIENT, company).import_data()
     # ResPartner(CLIENT, company).setting_parent()
 
     # AssetDecree(CLIENT, company).map_machine_type()
@@ -60,7 +60,7 @@ def import_data():
 if __name__ == "__main__":
     print("Beginning import data...\n")
     # check_modules()
-    Export(IPI_DEMO).export_data()
-    # import_data()
+    # Export(IPI_DEMO).export_data()
+    import_data()
 
     logging.info("\nFinito")

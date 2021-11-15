@@ -39,3 +39,6 @@ setup/win32/static/postgresql*.exe
 /man/
 /share/
 /src/
+
+# python import error csv files
+/import_files
