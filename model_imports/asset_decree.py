@@ -54,25 +54,30 @@ class AssetDecree:
                 csvfile, delimiter=self.file_delimiter, quotechar='"')
             error_file = open(MACH_ERR_FILE, 'w')
             error_writer = csv.DictWriter(error_file, delimiter=',', quotechar='"',
-                                          fieldnames=spam_reader.fieldnames)
+                                          fieldnames=spam_reader.fieldnames + ['error'])
             error_writer.writeheader()
             usage_dict, su_obj = {}, self.client.SectorUsage
             file_line = 1
             for row in spam_reader:
                 file_line += 1
                 try:
-                    # checking if the contact already exists
+                    # checking if the asset already exists
                     rp_obj = self.client.AssetDecrees
                     if rp_obj.search([('ipi_id', "=", int(row['id']))]):
                         print('Asset ' + row['factory_number'] + " already exists!")
                         continue
 
+                    #getting the related partner and addresses
+                    customer = self.get_many2one('ResPartner', row['customer_id'])
+                    if not customer:
+                        print("No client")
+                        continue
+                    customer_obj = self.client.ResPartner.browse([('id', '=', customer[0])])
                     city = self.get_many2one('ResCity', row['city'])
                     if city:
                         city_name = self.client.ResCity.browse(city[0]).name
                     region = self.get_many2one('ResCountryRegion', row['region'])
                     province = self.get_many2one('ResCountryState', row['province'])
-                    customer = self.get_many2one('ResPartner', row['customer_id'])
                     detail = self.get_many2one('DetailConfig', row['machine_type_id'])
                     identification = self.get_many2one('DetailIdentification', row['machine_type_id'])
                     equipment_type = self.client.DetailConfig.browse(detail[0]).equipment_type if detail else False
@@ -85,7 +90,8 @@ class AssetDecree:
                     vals = ({
                         'name': f"Machine num: {row['factory_number']}",
                         'ipi_id': int(row['id']),
-                        'customer_id': customer[0] if customer else False,
+                        'customer_id': customer_obj[0].parent_id if customer_obj[0].parent_id else customer[0],
+                        'child_location_id': customer[0] if customer else False,
                         'detail_id': detail[0] if detail else False,
                         'identification_id': identification[0] if identification else False,
                         'equipment_type': equipment_type if equipment_type else False,
@@ -101,11 +107,11 @@ class AssetDecree:
                         'city': city_name if city else False,
                         'state_id': province[0] if province else False,
                         'region_id': region[0] if region else False,
-                        'first_check_date': row['first_audit_at'],
-                        'previous_audit_date': row['last_audit_at'],
+                        'first_check_date': row['first_audit_at'] if row['first_audit_at'] != "NULL" else False,
+                        'previous_audit_date': row['last_audit_at'] if row['last_audit_at'] != "NULL" else False,
                         'audit_date': row['next_audit_at'],
                         # notified_organism_id: seems unused
-                        'ps_bar': row['ps_bar'],
+                        'ps_bar': row['ps_bar'] if row['ps_bar'] != "NULL" else False,
                         'fluid': row['fluid'] if row['fluid'] != 'NULL' else False,
                         # producibility?
                         'sector_of_use': usage.id,
@@ -115,10 +121,10 @@ class AssetDecree:
                     })
                     rp_obj.create(vals)
                     print(f"{file_line}")
-                except:
-                    print(f"Error at line: {file_line}")
+                except Exception as e:
+                    print(f"Line {file_line}: {e.faultCode}")
+                    row['error'] = e.faultCode
                     error_writer.writerow(row)
-
 
     def map_machine_type(self):
         with open(MACH_TYPE_FILE, 'r', encoding='utf8') as csvfile:
@@ -136,7 +142,6 @@ class AssetDecree:
                         'ipi_id': int(row['id']),
                         'equipment_type': MACH_TYPE_DICT[row['description']],
                     })
-                    continue
         print("\nMachine types have been mapped!")
 
     def map_identification(self):
@@ -145,7 +150,11 @@ class AssetDecree:
                 csvfile, delimiter=",", quotechar='"')
             for row in spam_reader:
                 di_obj = self.client.DetailIdentification
-                mtype_id = di_obj.search([('name', "=", row['description'])], limit=1)
+                description = row['description'].replace("   ", " ")
+                mtype_id = di_obj.search([
+                    ('name', "ilike", description),
+                    ('ipi_id', "!=", True),
+                ], limit=1)
                 if not mtype_id:
                     # TODO: create or skipping? now it is creating new ones
                     print("Machine Indentification {} was not found!".format(row['description']))

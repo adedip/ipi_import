@@ -14,24 +14,21 @@ from model_imports.asset_decree import AssetDecree
 
 FILE_INPUT_PATH = 'account.invoice.csv'
 
-ODOO_URL = 'http://localhost:8069'
-ODOO_DB = '14c_demo_ipi'
-ODOO_ACCOUNT = {'user': 'admin', 'pwd': 'admin'}
-MAIN_PATH = "import_files/"
-
 # setting erppeek
-CLIENT = Client(ODOO_URL,
-                db=ODOO_DB,
-                user=ODOO_ACCOUNT['user'],
-                password=ODOO_ACCOUNT['pwd'])
+# CLIENT = Client('http://localhost:8069',
+#                 db='14c_demo_ipi',
+#                 user='admin',
+#                 password='admin')
 
-IPI_DEMO = Client(
-            'https://ipi.odoo-demo.monksoftware.it/',
-            db='odooipitest',
+CLIENT = Client(
+            'https://ipi14.odoo-svil.monksoftware.it',
+            db='odooipi14svil',
             user='admin',
-            password="GRANDECampio'2019*")
+            password="kingcrimson*14")
 
-print('Connected to {}. Start import\n'.format(ODOO_URL))
+
+print('Connected to Client. Start import\n')
+
 
 def check_modules():
     installed_mod = CLIENT.IrModuleModule.browse([('state', '=', 'installed')]).name
@@ -43,23 +40,37 @@ def check_modules():
 
     print("\nYou're lucky..., all required moduled are installed ;)\n")
 
+
 def import_data():
     company = CLIENT.ResCompany.browse([('name', '=', 'Ipi S.r.l.')], limit=1)
     # GeoLocation(CLIENT, company).map_cities()
     # GeoLocation(CLIENT, company).map_regions()
     # GeoLocation(CLIENT, company).map_provinces()
-    # import utenti >> da Odoo
-    ResPartner(CLIENT, company).import_data()
+    # ResPartner(CLIENT, company).import_data()
+    # ResPartner(CLIENT, company).map_ids()
     # ResPartner(CLIENT, company).setting_parent()
 
     # AssetDecree(CLIENT, company).map_machine_type()
     # AssetDecree(CLIENT, company).map_identification()
-    # AssetDecree(CLIENT, company).import_data()
+    AssetDecree(CLIENT, company).import_data()
+
+    ### INTEGRATIONS ###
+
+    # ResPartner(CLIENT, company).integrate_data()
+
+    """
+    !! integrazione partenr !!
+    > tipo indirizzo .- (sede-amministrativa)
+    gerarchia nome
+
+    integrazione asset:
+    cliente nell'indirizzo cliente, nel cliente metto il parent
+    """
 
 
 if __name__ == "__main__":
     print("Beginning import data...\n")
-    # check_modules()
+    check_modules()
     # Export(IPI_DEMO).export_data()
     import_data()
 

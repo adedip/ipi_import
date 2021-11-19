@@ -41,4 +41,4 @@ setup/win32/static/postgresql*.exe
 /src/
 
 # python import error csv files
-/import_files
+/error_files
