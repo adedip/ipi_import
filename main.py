@@ -7,14 +7,12 @@
 
 from erppeek import Client
 import logging
-from export import Export
 from model_imports.res_partner import ResPartner
 from model_imports.geolocation import GeoLocation
 from model_imports.asset_decree import AssetDecree
 
-FILE_INPUT_PATH = 'account.invoice.csv'
-
 # setting erppeek
+
 # CLIENT = Client('http://localhost:8069',
 #                 db='14c_demo_ipi',
 #                 user='admin',
@@ -49,14 +47,19 @@ def import_data():
     # ResPartner(CLIENT, company).import_data()
     # ResPartner(CLIENT, company).map_ids()
     # ResPartner(CLIENT, company).setting_parent()
+    # ResPartner(CLIENT, company).import_users()
 
     # AssetDecree(CLIENT, company).map_machine_type()
     # AssetDecree(CLIENT, company).map_identification()
-    AssetDecree(CLIENT, company).import_data()
+    # AssetDecree(CLIENT, company).import_data()
 
     ### INTEGRATIONS ###
 
-    # ResPartner(CLIENT, company).integrate_data()
+    ResPartner(CLIENT, company).integrate_data()
+    # ResPartner(CLIENT, company).clean_data()
+
+    # AssetDecree(CLIENT, company).integrate_data()
+
 
     """
     !! integrazione partenr !!

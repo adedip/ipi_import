@@ -3,7 +3,9 @@ import csv
 MAIN_PATH = "import_files/"
 MACH_TYPE_FILE = MAIN_PATH + "machine_types.csv"
 MACH_IDENTIFICATION = MAIN_PATH + "machines_specific_details.csv"
+
 ASSETS_FILE = MAIN_PATH + "customer_machines_medium.csv"
+ODOO_ASSETS_FILE = MAIN_PATH + "odoo10_macchine_export.csv"
 
 ERROR_PATH = "error_files/"
 MACH_ERR_FILE = ERROR_PATH + "machines_error.csv"
@@ -110,12 +112,12 @@ class AssetDecree:
                         'first_check_date': row['first_audit_at'] if row['first_audit_at'] != "NULL" else False,
                         'previous_audit_date': row['last_audit_at'] if row['last_audit_at'] != "NULL" else False,
                         'audit_date': row['next_audit_at'],
-                        # notified_organism_id: seems unused
+                        # notified_organism_id: row['notified_organism_id'] >>> seems unused
                         'ps_bar': row['ps_bar'] if row['ps_bar'] != "NULL" else False,
                         'fluid': row['fluid'] if row['fluid'] != 'NULL' else False,
                         # producibility?
                         'sector_of_use': usage.id,
-                        # customer_machine_code?
+                        # customer_machine_code >> codice_identificativo
                         # note?
                         # state?
                     })
@@ -172,3 +174,44 @@ class AssetDecree:
                 record.detail_id = int(row['machine_type_detail_id'])
 
         print("\nMachine identifications have been mapped!")
+
+    """INTEGRATION SCRIPTS """
+    def integrate_data(self):
+        with open(ASSETS_FILE, 'r', encoding='utf8') as csvfile:
+            spam_reader = csv.DictReader(
+                csvfile, delimiter=self.file_delimiter, quotechar='"')
+            file_line = 1
+            for row in spam_reader:
+                file_line += 1
+                try:
+                    # finding the partner
+                    ad_obj = self.client.AssetDecrees
+                    asset = ad_obj.search([('ipi_id', "=", row['id'])], limit=1)
+                    if not asset:
+                        print(f"Asset {row['factory_number']} not found!")
+                        continue
+                    partner = ad_obj.browse(asset[0])
+                    # preparing data to update
+                    # serial_list = self.get_serial_number(row['serial_number'])
+                    vals = {
+                        'identification_code': row['customer_machine_code'],
+                        'comment': row['note'] if row['note'] != "" else False,
+                        # 'serial_number_1': serial_list[0],
+                        # 'serial_number_2': serial_list[1],
+                        # 'serial_number_3': serial_list[2],
+                        # 'serial_number_4': serial_list[3],
+                    }
+                    if partner.factory_number and partner.factory_number != row['factory_number']:
+                        print("Wrong factory number ;(")
+                    partner.write(vals)
+                    # partner[0].type_company = partner_type
+                    print(f"{file_line}")
+                except Exception as e:
+                    print(f"Line {file_line}: {e}")
+
+    def get_serial_number(self, serial):
+        serial_list = serial.split("/")
+        if len(serial_list) == 3:
+            return ["0000"] + serial_list
+        elif len(serial_list) == 4:
+            return serial_list

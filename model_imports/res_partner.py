@@ -2,6 +2,7 @@ import csv
 
 # ACTORS_PATH = "import_files/all_actors.csv"
 ACTORS_PATH = "import_files/ipi_10_partner_exp_short.csv"
+USERS_PATH = "import_files/res_users.csv"
 ID_MAP_PATH = "import_files/ipi_odoo_id_mapping_short.csv"
 ERROR_PATH = "error_files/"
 ACTORS_ERR_FILE = ERROR_PATH + "actors_error.csv"
@@ -209,7 +210,44 @@ class ResPartner:
 
         print("\n Partner IDS have been mapped!")
 
-    """INTEGRATION SCRIPTS """
+    def import_users(self):
+        with open(USERS_PATH, 'r', encoding='utf8') as csvfile:
+            spam_reader = csv.DictReader(
+                csvfile, delimiter=self.file_delimiter, quotechar='"')
+            file_line = 1
+            for row in spam_reader:
+                file_line += 1
+                try:
+                    # finding the partner
+                    login = row['login']
+                    ru_obj = self.client.ResUsers
+                    user = ru_obj.search([('login', "=", login)], limit=1)
+                    if user:
+                        print(f"User {login} exists!")
+                        continue
+                    vals = {
+                        'login': login,
+                        'name': row['name'],
+                        'lang': row['lang'],
+                        'tz': row['tz'],
+                    }
+
+                    rp_obj = self.client.ResPartner
+                    partner = rp_obj.search([('email', "=", login)], limit=1)
+                    if partner:
+                        vals.update({'partner_id': partner[0]})
+                    ru_obj.create(vals)
+                    # partner[0].type_company = partner_type
+                    print(f"{file_line}")
+                except Exception as e:
+                    print(f"Line {file_line}: {e.faultCode}")
+
+        print("\n Users have been created!")
+
+    """
+    INTEGRATION SCRIPTS
+    """
+
     def integrate_data(self):
         with open(ACTORS_PATH, 'r', encoding='utf8') as csvfile:
             spam_reader = csv.DictReader(
@@ -219,6 +257,8 @@ class ResPartner:
                 file_line += 1
                 try:
                     # finding the partner
+                    if row['active'] == "True":
+                        continue
                     odoo_id = f"__odoo_id_{row['id']}"
                     rp_obj = self.client.ResPartner
                     partner = rp_obj.search([('ref', "=", odoo_id)], limit=1)
@@ -229,10 +269,11 @@ class ResPartner:
                     # preparing data to update
                     partner_type = self.return_type(row['type'])
                     vals = {
-                        'type': partner_type,
-                        'is_company': self.format_boolean(row['is_company']),
-                        'is_condominium': self.format_boolean(row['is_apartment_building']),
-                        'is_competitor': self.format_boolean(row['is_competitor']),
+                        'active': self.format_boolean(row['active']),
+                        # 'type': partner_type,
+                        # 'is_company': self.format_boolean(row['is_company']),
+                        # 'is_condominium': self.format_boolean(row['is_apartment_building']),
+                        # 'is_competitor': self.format_boolean(row['is_competitor']),
                     }
                     partner.write(vals)
                     # partner[0].type_company = partner_type
@@ -247,3 +288,28 @@ class ResPartner:
             return 'administrative_office'
         else:
             return cell
+
+    def clean_field(self, field):
+        return False if field in ['NULL', '', 0, 0.0] else field
+
+    def clean_data(self):
+        partners = self.client.ResPartner.browse([('id', '!=', False)])
+        total = len(partners)
+        file_line = 1
+        for partner in partners:
+            file_line += 1
+            try:
+                vals = {
+                    'fiscalcode': self.clean_field(partner.fiscalcode),
+                    'vat': self.clean_field(partner.vat),
+                    'mobile': self.clean_field(partner.mobile),
+                    'phone': self.clean_field(partner.phone),
+                    'street2': self.clean_field(partner.street2),
+                    'email': self.clean_field(partner.email),
+                    'website': self.clean_field(partner.website),
+                }
+                partner.write(vals)
+                print(f"{file_line} - partner {partner.name} updated! ")
+            except:
+                print(f"{file_line} - partner {partner.name} error found! ")
+
