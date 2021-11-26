@@ -1,0 +1,33 @@
+"id","customer_id","type_id","location_address","location_zipcode","location_city_id","location_province_id","location_region_id","business_unit_id","first_audit_at","last_audit_at","next_audit_at","state","contact_user_id","note","operator","code","name","plant_type","range","stop_numb","registration_number","builder_name","capacity","installation_year","speed","factory_number"
+1,12,20,"Via Roma, 22/C",45021,7254,68,17,0,"0000-00-00","0000-00-00","2020-03-26",0,0,,"CONDOMINIO ",,"VIA ROMA 22/C - dx",1,315,5,"RO173","SAFOV",4,1970,0.71,26785
+2,13,20,"Via  Copernico, 6",29027,1510,62,14,0,"0000-00-00","0000-00-00","2022-05-26",1,0,,"DRILLMEC SPA",,"21NE6100",2,1000,4,6,"FALCONI",13,1993,0.52,"21NE6100"
+3,13,20,"Via  Copernico, 6",29027,1510,62,14,0,"0000-00-00","0000-00-00","2022-05-26",1,0,,"DRILLMEC SPA",,35884,1,500,2,"PC-15/87","BASSETTI",6,1988,0.8,35884
+4,15,20,"Corso Mazzini,121/127",87100,460,22,7,0,"0000-00-00","0000-00-00","2017-10-11",0,0,"1)Installare lampada di emergenza nella cbina ascensore","Agenzia Bancaria",10590,10590,2,315,4,"90/85","SABIEM",0,1985,0,"SAB095352"
+5,14,20,"Via Alfonso Borrelli 20/22",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-09-24",0,0," Si nota presenza acqua in fossa (in corso opera di bonifica)
+","Agenzia Bancaria",2046,2046,1,800,2,"PA 9404","Sabiem",0,0,0,36825
+6,14,20,"VIA G. B. GUCCIA 19 ",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-09-09",0,0,"Indirizzo completo:VIA G. B. GUCCIA 19 - VIA RUGGERO SETTIMO 42 - VIA DI STEFANO
+Note:1) Il CEV risulta vetusto e rumoroso, anche se funzionante alla prova: sostituirlo completo di tutti gli accessori
+","Agenzia bancaria",2057,2057,1,315,7,"PA 8742","Sabiem",0,1979,0,35219
+7,14,20,"VIA G. B. GUCCIA 19 ",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-12-09",0,0,"Indirizzo Completo:VIA G. B. GUCCIA 19 - VIA RUGGERO SETTIMO 42 - VIA DI STEFANO.
+1) Sostituire le batterie del dispositivo automatico di riporto al piano; 2) Il CEV risulta vetusto, anche se funzionante alla prova: sostituirlo completo di tutti gli acce","Agenzia Bancaria",2058,2058,1,315,7,"PA 8743","Sabiem",0,1979,0,35220
+8,14,20,"VIA G. B. GUCCIA 19 ",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-12-09",0,0,"VIA G. B. GUCCIA 19 - VIA RUGGERO SETTIMO 42 - VIA DI STEFANO
+1) Sostituire le batterie del dispositivo automatico di riporto al piano; 2) Il CEV risulta vetusto, anche se funzionante alla prova: sostituirlo completo di tutti gli accessori, 3)  Il quadro","Agenzia Bancaria",2060,2060,1,400,9,"PA8745","Sabiem",0,1979,0,35222
+9,14,20,"VIA G. B. GUCCIA 19 ",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-12-09",0,0,"VIA G. B. GUCCIA 19 - VIA RUGGERO SETTIMO 42 - VIA DI STEFANO
+1) Il gruppo argano-motore presenta perdite di olio e rumorositÃ : eliminarli 2) Il quadro di manovra presenta elementi deteriorati e/o magnetizzati: sostituirlo; 3) Il CEV risulta vetusto anc","Agenzia bancaria",2061,2061,1,400,9,"PA 8746","Sabiem",0,1979,0,35223
+10,14,20,"VIA G. B. GUCCIA 19 ",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-12-09",0,0,"VIA G. B. GUCCIA 19 - VIA RUGGERO SETTIMO 42 - VIA DI STEFANO
+1) Sostituire le batterie del dispositivo automatico di riporto al piano; 2) Il CEV risulta vetusto, anche se funzionante alla prova: sostituirlo completo di tutti gli accessori, 3)  Il quadro","Agenzia Bancaria",2062,2062,1,400,9,"PA 8747","Sabiem",0,1979,0,35224
+11,14,20,"VIA G. B. GUCCIA 19 ",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-12-09",0,0,"VIA G. B. GUCCIA 19 - VIA RUGGERO SETTIMO 42 - VIA DI STEFANO
+1) Sostituire le batterie del dispositivo automatico di riporto al piano; 2) Il CEV risulta vetusto, anche se funzionante alla prova: sostituirlo completo di tutti gli accessori, 3)  Il quadro","Agenzia Bancaria",2063,2063,1,400,8,"PA 8748","Sabiem",0,1979,0,35225
+12,14,20,"VIA G. B. GUCCIA 19 ",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-12-09",0,0,"Indirizzo completo:VIA G. B. GUCCIA 19 - VIA RUGGERO SETTIMO 42 - VIA DI STEFANO
+","Agenzia Bancaria",2064,2064,1,400,9,"PA8749","Sabiem",0,1979,0,35226
+13,14,20,"VIA MAGLIOCCO",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-12-08",0,0,"Indirizzo Completo:VIA MAGLIOCCO-VIA R. SETTIMO 26-PIAZZALE UNGHERIA
+Note:1) Sostituire bottoniera d'ispezione; 2) Sostituire batterie del dispositivo automatico di riporto al piano; 3) sostituire lampada emergenza LM e VC, 4) rendere disponibile librett","Agenzia Bancaria",2070,2070,1,475,7,"PA 983","Sabiem",0,1956,0,901136
+14,14,20,"VIA MAGLIOCCO",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-12-08",0,0,"Indirizzo Completo:VIA MAGLIOCCO -VIA R. SETTIMO 26-PIAZZALE UNGHERIA
+1) Il CEV risulta vetusto, anche se funzionante alla prova: sostituirlo completo di tutti gli accessori 2) Sostituire bottoniera d'ispezione; 3)sgombrare materiale posto nella scala d'","Agenzia Bancaria",2048,2048,1,475,7,"PA 984","Fiam",0,1956,0,901135
+15,14,20,"Piazza UnitÃ  d'Italia 16/18",90100,6265,17,11,0,"0000-00-00","0000-00-00","2016-09-24",0,0,"Installare lampada emergenza locale macchine, sostituire lampade vano corsa, manca libretto, manca interruttore emergenza in caso di pericolo.
+","Agenzia Bancaria",2086,2086,1,400,2,"PA7220","Sabiem",0,0,0,31276
+16,14,20,"Corso Umberto 77;Piazza Roma77",9170,5886,80,10,0,"0000-00-00","0000-00-00","2016-06-12",0,0,"1) Si nota presenza acqua in fossa (in corso opera di bonifica)
+","Agenzia Bancaria",10470,10470,2,320,4,"OR 117",,0,1978,0,
+17,14,20,"VIA DEL CORSO 374",100,2142,42,9,0,"0000-00-00","0000-00-00","2016-06-10",0,0,,"Agenzia Bancaria",1045,1045,1,400,5,"CR 14530","Kone",0,2000,0,11523326
+18,14,20,"Piazza Pitagora 10/11",100,2142,42,9,0,"0000-00-00","0000-00-00","2016-04-28",0,0,"1) Agevolare accesso in fossa 2) Adeguare impianto elettrico 3) Dotare scale di accesso al locale macchina 4) tenere copia del libretto di immatricolazione sull'impianto.
+","Agenzia Bancaria",10723,10723,1,"250 Kg",4,701528,"Fiam",0,1962,0,27025

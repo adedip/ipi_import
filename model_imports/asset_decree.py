@@ -4,7 +4,9 @@ MAIN_PATH = "import_files/"
 MACH_TYPE_FILE = MAIN_PATH + "machine_types.csv"
 MACH_IDENTIFICATION = MAIN_PATH + "machines_specific_details.csv"
 
-ASSETS_FILE = MAIN_PATH + "customer_machines_medium.csv"
+ASSETS_FILE_DM1104 = MAIN_PATH + "customer_machines_medium.csv"
+ASSETS_FILE_DPR162 = MAIN_PATH + "dpr_162_machines_short.csv"
+ASSETS_FILE_DPR462 = MAIN_PATH + "dpr_462_machines_short.csv"
 ODOO_ASSETS_FILE = MAIN_PATH + "odoo10_macchine_export.csv"
 
 ERROR_PATH = "error_files/"
@@ -50,8 +52,21 @@ class AssetDecree:
         return getattr(self.client, model).search([
             ('ipi_id', "=", ipi_id)], limit=1)
 
+    @staticmethod
+    def select_asset_file(self, import_type):
+        if import_type == 'dm1104':
+            return ASSETS_FILE_DM1104
+        elif import_type == 'dpr162':
+            return ASSETS_FILE_DPR162
+        elif import_type == 'dpr462':
+            return ASSETS_FILE_DPR462
+
     def import_data(self):
-        with open(ASSETS_FILE, 'r', encoding='utf8') as csvfile:
+        # TODO: SELECT THE TYPE OF IMPORT!!
+        import_type = ['dm1104', 'dpr162', 'dpr462'][1]
+
+        import_file = self.select_asset_file(import_type)
+        with open(import_file, 'r', encoding='utf8') as csvfile:
             spam_reader = csv.DictReader(
                 csvfile, delimiter=self.file_delimiter, quotechar='"')
             error_file = open(MACH_ERR_FILE, 'w')
@@ -75,13 +90,21 @@ class AssetDecree:
                         print("No client")
                         continue
                     customer_obj = self.client.ResPartner.browse([('id', '=', customer[0])])
-                    city = self.get_many2one('ResCity', row['city'])
+
+                    # city, province and region depending on the import
+                    city_param = 'city' if import_type == 'dm1104' else 'location_city_id'
+                    city = self.get_many2one('ResCity', city_param)
                     if city:
                         city_name = self.client.ResCity.browse(city[0]).name
-                    region = self.get_many2one('ResCountryRegion', row['region'])
-                    province = self.get_many2one('ResCountryState', row['province'])
-                    detail = self.get_many2one('DetailConfig', row['machine_type_id'])
-                    identification = self.get_many2one('DetailIdentification', row['machine_type_id'])
+                    region_param = 'region' if import_type == 'dm1104' else 'location_region_id'
+                    region = self.get_many2one('ResCountryRegion', region_param)
+                    province_param = 'province' if import_type == 'dm1104' else 'location_province_id'
+                    province = self.get_many2one('ResCountryState', province_param)
+
+                    # TODO: maybe error, check machiine type config , check fields mapping!!
+                    detail = self.get_many2one('DetailConfig', row['machine_type_detail_id'])
+                    # TODO: identification pass via tariffplan
+                    identification = self.get_many2one('DetailIdentification', row['machine_type_detail_id'])
                     equipment_type = self.client.DetailConfig.browse(detail[0]).equipment_type if detail else False
                     if isinstance(row['usage'],str):
                         usage = usage_dict.get(row['usage'], False)
@@ -94,18 +117,8 @@ class AssetDecree:
                         'ipi_id': int(row['id']),
                         'customer_id': customer_obj[0].parent_id if customer_obj[0].parent_id else customer[0],
                         'child_location_id': customer[0] if customer else False,
-                        'detail_id': detail[0] if detail else False,
-                        'identification_id': identification[0] if identification else False,
-                        'equipment_type': equipment_type if equipment_type else False,
-                        'model': row['model'],
                         # 'serial_number': row['registration_number'],
-                        'brand_maker': row['vendor'],
                         'factory_number': row['factory_number'],
-                        'registration_year': row['registration_year'],
-                        'built_year': row['construction_year'],
-                        'ce_marking': True if row['ce'] == 'SI' else False,
-                        'street': row['address'],
-                        'zip': row['zipcode'],
                         'city': city_name if city else False,
                         'state_id': province[0] if province else False,
                         'region_id': region[0] if region else False,
@@ -113,14 +126,81 @@ class AssetDecree:
                         'previous_audit_date': row['last_audit_at'] if row['last_audit_at'] != "NULL" else False,
                         'audit_date': row['next_audit_at'],
                         # notified_organism_id: row['notified_organism_id'] >>> seems unused
-                        'ps_bar': row['ps_bar'] if row['ps_bar'] != "NULL" else False,
-                        'fluid': row['fluid'] if row['fluid'] != 'NULL' else False,
-                        # producibility?
-                        'sector_of_use': usage.id,
-                        # customer_machine_code >> codice_identificativo
-                        # note?
+                        'comment': row['note'] if row['note'] != "" else False,
                         # state?
                     })
+
+                    # DM1104 INTEGRATION
+                    if import_type == 'dm1104':
+                        vals.update({
+                            'zip': row['zipcode'],
+                            'identification_code': row['customer_machine_code'],
+                            'brand_maker': row['vendor'],
+                            'street': row['address'],
+                            'detail_id': detail[0] if detail else False,
+                            'identification_id': identification[0] if identification else False,
+                            'equipment_type': equipment_type if equipment_type else False,
+                            'model': row['model'],
+                            'built_year': row['construction_year'],
+                            'registration_year': row['registration_year'],
+                            'ce_marking': True if row['ce'] == 'SI' else False,
+                            'ps_bar': row['ps_bar'] if row['ps_bar'] != "NULL" else False,
+                            'fluid': row['fluid'] if row['fluid'] != 'NULL' else False,
+                            # producibility?
+                            'sector_of_use': usage.id,
+                        })
+
+                    # DPR162 INTEGRATION
+                    if import_type == 'dpr162':
+                        vals.update({
+                            # type ? , maybe useles  all is 20
+                            'street': row['location_address '],
+                            'zip': row['location_zipcode'],
+                            # business_unit_id ?
+                            # operator ?
+                            'identification_code': row['name'],
+                            # code ? , uguale a NAME con qualche campo in meno
+                            # plant_type ??
+                            # range??
+                            # stop_numb ?
+                            'model': row['registration_number'],
+                            'built_year': row['installation_year'],
+
+                            'brand_maker': row['builder_name'],
+                            'capacity': row['capacity'],
+                        })
+
+                    # DPR462 INTEGRATION
+                    if import_type == 'dpr462':
+                        measuring_points = int(row['measuring_points']) if \
+                            (
+                                row['measuring_points'] not in ['', 'MT', 'BT']
+                            ) else False
+                        vals.update({
+                            # type ? , maybe useles  all is 20
+                            'street': row['location_address '],
+                            'zip': row['location_zipcode'],
+                            # business_unit_id ?
+                            'measuring_points': measuring_points,
+                            # energy_power
+                            # surface_area
+                            # structure_type
+                            # man_hours
+                            # contact_user_id
+                            # operator ?
+                            # code ? , uguale a NAME con qualche campo in meno
+                            'identification_code': row['name'],
+                            # periodicity?
+                            # dangerous_gas >> not matching with selection field
+                            # dangerous_dust >> not matching with selection
+                            'step_points': row['step_points'],
+                            # TODO: check selection options for fields below
+                            'supply_type': row['supply_type'] if (row['supply_type'] in ['BT', 'MT', 'AT']) else False,
+                            'distribution_type': row['distribution_type'] if (row['distribution_type'] in ['IT', 'TN', 'TT']) else False,
+                            # contact_points
+                            # plant_syte
+                        })
+
                     rp_obj.create(vals)
                     print(f"{file_line}")
                 except Exception as e:
@@ -177,7 +257,10 @@ class AssetDecree:
 
     """INTEGRATION SCRIPTS """
     def integrate_data(self):
-        with open(ASSETS_FILE, 'r', encoding='utf8') as csvfile:
+        import_type = ['dm1104', 'dpr162', 'dpr462'][1]
+        import_file = self.select_asset_file(import_type)
+
+        with open(import_file, 'r', encoding='utf8') as csvfile:
             spam_reader = csv.DictReader(
                 csvfile, delimiter=self.file_delimiter, quotechar='"')
             file_line = 1
