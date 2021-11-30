@@ -51,11 +51,11 @@ def import_data():
 
     # AssetDecree(CLIENT, company).map_machine_type()
     # AssetDecree(CLIENT, company).map_identification()
-    # AssetDecree(CLIENT, company).import_data()
+    AssetDecree(CLIENT, company).import_data()
 
     ### INTEGRATIONS ###
 
-    ResPartner(CLIENT, company).integrate_data()
+    # ResPartner(CLIENT, company).integrate_data()
     # ResPartner(CLIENT, company).clean_data()
 
     # AssetDecree(CLIENT, company).integrate_data()

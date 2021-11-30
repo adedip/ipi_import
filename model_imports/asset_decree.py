@@ -4,13 +4,21 @@ MAIN_PATH = "import_files/"
 MACH_TYPE_FILE = MAIN_PATH + "machine_types.csv"
 MACH_IDENTIFICATION = MAIN_PATH + "machines_specific_details.csv"
 
-ASSETS_FILE_DM1104 = MAIN_PATH + "customer_machines_medium.csv"
-ASSETS_FILE_DPR162 = MAIN_PATH + "dpr_162_machines_short.csv"
-ASSETS_FILE_DPR462 = MAIN_PATH + "dpr_462_machines_short.csv"
-ODOO_ASSETS_FILE = MAIN_PATH + "odoo10_macchine_export.csv"
-
 ERROR_PATH = "error_files/"
 MACH_ERR_FILE = ERROR_PATH + "machines_error.csv"
+
+IMPORT_FILE_DICT = {
+    'dm1104': MAIN_PATH + "customer_machines_medium.csv",
+    'dpr162': MAIN_PATH + "dpr_162_machines_short.csv",
+    'dpr462': MAIN_PATH + "dpr_462_machines_short.csv",
+    'odoo': MAIN_PATH + "odoo10_macchine_export.csv",
+}
+
+ID_FIELD_DICT = {
+    'dm1104': 'ipi_id',
+    'dpr162': 'ipi162_id',
+    'dpr462': 'ipi462_id',
+}
 
 MACH_TYPE_DICT = {
     'Piattaforme': 'PeopleLiftingDm1104',
@@ -52,20 +60,12 @@ class AssetDecree:
         return getattr(self.client, model).search([
             ('ipi_id', "=", ipi_id)], limit=1)
 
-    @staticmethod
-    def select_asset_file(self, import_type):
-        if import_type == 'dm1104':
-            return ASSETS_FILE_DM1104
-        elif import_type == 'dpr162':
-            return ASSETS_FILE_DPR162
-        elif import_type == 'dpr462':
-            return ASSETS_FILE_DPR462
-
     def import_data(self):
         # TODO: SELECT THE TYPE OF IMPORT!!
         import_type = ['dm1104', 'dpr162', 'dpr462'][1]
+        id_prefix = [0, 100000, 20000][1]
+        import_file = IMPORT_FILE_DICT[import_type]
 
-        import_file = self.select_asset_file(import_type)
         with open(import_file, 'r', encoding='utf8') as csvfile:
             spam_reader = csv.DictReader(
                 csvfile, delimiter=self.file_delimiter, quotechar='"')
@@ -80,7 +80,8 @@ class AssetDecree:
                 try:
                     # checking if the asset already exists
                     rp_obj = self.client.AssetDecrees
-                    if rp_obj.search([('ipi_id', "=", int(row['id']))]):
+                    ipi_id = id_prefix + int(row['id'])
+                    if rp_obj.search([('ipi_id', "=", ipi_id)]):
                         print('Asset ' + row['factory_number'] + " already exists!")
                         continue
 
@@ -114,7 +115,7 @@ class AssetDecree:
                             usage_dict[row['usage']] = usage
                     vals = ({
                         'name': f"Machine num: {row['factory_number']}",
-                        'ipi_id': int(row['id']),
+                        'ipi_id': ipi_id,
                         'customer_id': customer_obj[0].parent_id if customer_obj[0].parent_id else customer[0],
                         'child_location_id': customer[0] if customer else False,
                         # 'serial_number': row['registration_number'],
@@ -130,7 +131,7 @@ class AssetDecree:
                         # state?
                     })
 
-                    # DM1104 INTEGRATION
+                    # DM1104 SPECIFIC
                     if import_type == 'dm1104':
                         vals.update({
                             'zip': row['zipcode'],
@@ -150,31 +151,35 @@ class AssetDecree:
                             'sector_of_use': usage.id,
                         })
 
-                    # DPR162 INTEGRATION
+                    # DPR162 SPECIFIC
                     if import_type == 'dpr162':
                         vals.update({
-                            # type ? , maybe useles  all is 20
+                            'type': 'LiftsDpr162',
                             'street': row['location_address '],
                             'zip': row['location_zipcode'],
                             # business_unit_id ?
                             # operator ?
                             'identification_code': row['name'],
                             # code ? , uguale a NAME con qualche campo in meno
-                            # plant_type ??
+                            # TODO: 'detail_id' : 'electrical_system' if row['plant_type'] == 1 else 'hydraulic_system',
+                            'detail_id' : 20 if row['plant_type'] == 1 else 61,
                             # range??
-                            # stop_numb ?
+                            # 'stop_number': row['stop_numb'],
                             'model': row['registration_number'],
                             'built_year': row['installation_year'],
-
                             'brand_maker': row['builder_name'],
                             'capacity': row['capacity'],
                         })
 
-                    # DPR462 INTEGRATION
+                    # DPR462 SPECIFIC
                     if import_type == 'dpr462':
                         measuring_points = int(row['measuring_points']) if \
                             (
-                                row['measuring_points'] not in ['', 'MT', 'BT']
+                                row['measuring_points'] not in ['', 'MT', 'BT'],
+                                # 10: messa a terra,
+                                # 12: pericolo esplosione,
+                                # 11: scarica atmosferiche,
+                                # 12: passo e contatto,
                             ) else False
                         vals.update({
                             # type ? , maybe useles  all is 20
@@ -273,20 +278,26 @@ class AssetDecree:
                     if not asset:
                         print(f"Asset {row['factory_number']} not found!")
                         continue
-                    partner = ad_obj.browse(asset[0])
+                    asset = ad_obj.browse(asset[0])
+                    detail = self.get_many2one('DetailConfig', row['machine_type_detail_id'])
+                    identification = self.get_many2one('DetailIdentification', row['machine_tariffplan_id'])
+                    equipment_type = self.client.DetailConfig.browse(detail[0]).equipment_type if detail else False
                     # preparing data to update
                     # serial_list = self.get_serial_number(row['serial_number'])
                     vals = {
-                        'identification_code': row['customer_machine_code'],
-                        'comment': row['note'] if row['note'] != "" else False,
+                        'detail_id': detail[0] if detail else False,
+                        'identification_id': identification[0] if identification else False,
+                        'equipment_type': equipment_type if equipment_type else False,
+                        # 'identification_code': row['customer_machine_code'],
+                        # 'comment': row['note'] if row['note'] != "" else False,
                         # 'serial_number_1': serial_list[0],
                         # 'serial_number_2': serial_list[1],
                         # 'serial_number_3': serial_list[2],
                         # 'serial_number_4': serial_list[3],
                     }
-                    if partner.factory_number and partner.factory_number != row['factory_number']:
-                        print("Wrong factory number ;(")
-                    partner.write(vals)
+                    # if asset.factory_number and asset.factory_number != row['factory_number']:
+                        #  print("Wrong factory number ;(")
+                    asset.write(vals)
                     # partner[0].type_company = partner_type
                     print(f"{file_line}")
                 except Exception as e:
