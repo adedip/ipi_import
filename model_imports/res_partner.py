@@ -9,11 +9,12 @@ ACTORS_ERR_FILE = ERROR_PATH + "actors_error.csv"
 
 
 class ResPartner:
-    def __init__(self, client, company):
+    def __init__(self, client, company, import_type):
         self.file_delimiter = ","
         self.encoding = "utf8"
         self.client = client
         self.company = company
+        self.import_type = import_type
 
     def get_geolocation(self, kind, ipi_id):
         geo_dict = {

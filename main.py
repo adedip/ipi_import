@@ -13,16 +13,16 @@ from model_imports.asset_decree import AssetDecree
 
 # setting erppeek
 
-# CLIENT = Client('http://localhost:8069',
-#                 db='14c_demo_ipi',
-#                 user='admin',
-#                 password='admin')
+CLIENT = Client('http://localhost:8069',
+                db='14c_demo_ipi',
+                user='admin',
+                password='admin')
 
-CLIENT = Client(
-            'https://ipi14.odoo-svil.monksoftware.it',
-            db='odooipi14svil',
-            user='admin',
-            password="kingcrimson*14")
+# CLIENT = Client(
+#             'https://ipi14.odoo-svil.monksoftware.it',
+#             db='odooipi14svil',
+#             user='admin',
+#             password="kingcrimson*14")
 
 
 print('Connected to Client. Start import\n')
@@ -39,42 +39,33 @@ def check_modules():
     print("\nYou're lucky..., all required moduled are installed ;)\n")
 
 
-def import_data():
+def import_data(import_type):
     company = CLIENT.ResCompany.browse([('name', '=', 'Ipi S.r.l.')], limit=1)
-    # GeoLocation(CLIENT, company).map_cities()
-    # GeoLocation(CLIENT, company).map_regions()
-    # GeoLocation(CLIENT, company).map_provinces()
-    # ResPartner(CLIENT, company).import_data()
-    # ResPartner(CLIENT, company).map_ids()
-    # ResPartner(CLIENT, company).setting_parent()
-    # ResPartner(CLIENT, company).import_users()
+    # mapping geolocation
+    # GeoLocation(CLIENT, company, import_type).map_cities()
+    # GeoLocation(CLIENT, company, import_type).map_regions()
+    # GeoLocation(CLIENT, company, import_type).map_provinces()
 
-    # AssetDecree(CLIENT, company).map_machine_type()
-    # AssetDecree(CLIENT, company).map_identification()
-    AssetDecree(CLIENT, company).import_data()
+    # ResPartner(CLIENT, company, import_type).import_data()
+    # ResPartner(CLIENT, company, import_type).map_ids()
+    # ResPartner(CLIENT, company, import_type).setting_parent()
+    # ResPartner(CLIENT, company, import_type).import_users()
+
+    # AssetDecree(CLIENT, company, import_type).map_machine_type()
+    # AssetDecree(CLIENT, company, import_type).map_identification()
+    AssetDecree(CLIENT, company, import_type).import_data()
 
     ### INTEGRATIONS ###
 
-    # ResPartner(CLIENT, company).integrate_data()
-    # ResPartner(CLIENT, company).clean_data()
+    # ResPartner(CLIENT, company, import_type).integrate_data()
+    # ResPartner(CLIENT, company, import_type).clean_data()
 
-    # AssetDecree(CLIENT, company).integrate_data()
-
-
-    """
-    !! integrazione partenr !!
-    > tipo indirizzo .- (sede-amministrativa)
-    gerarchia nome
-
-    integrazione asset:
-    cliente nell'indirizzo cliente, nel cliente metto il parent
-    """
+    # AssetDecree(CLIENT, company, import_type).integrate_data()
 
 
 if __name__ == "__main__":
     print("Beginning import data...\n")
     check_modules()
-    # Export(IPI_DEMO).export_data()
-    import_data()
-
-    logging.info("\nFinito")
+    import_type = ['dm1104', 'dpr162', 'dpr462'][0]
+    import_data(import_type)
+    logging.info("\nFinito ;)")

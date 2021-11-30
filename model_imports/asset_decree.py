@@ -46,9 +46,10 @@ MACH_TYPE_DICT = {
 
 
 class AssetDecree:
-    def __init__(self, client, company):
+    def __init__(self, client, company, import_type):
         self.client = client
         self.company = company
+        self.import_type = import_type
         self.file_delimiter = ","
 
     def get_client(self, ipi_id):

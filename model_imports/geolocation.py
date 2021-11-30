@@ -7,10 +7,11 @@ REGIONS_FILE = MAIN_PATH + "regions.csv"
 
 
 class GeoLocation:
-    def __init__(self, client, company):
+    def __init__(self, client, company, import_type):
         self.encoding = "utf8"
         self.client = client
         self.company = company
+        self.import_type = import_type
 
     def map_cities(self):
         """TODO: Try to match ipi_id to cities in Odoo."""
