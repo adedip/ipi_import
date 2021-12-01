@@ -1,11 +1,5 @@
 import csv
-
-# ACTORS_PATH = "import_files/all_actors.csv"
-ACTORS_PATH = "import_files/ipi_10_partner_exp_short.csv"
-USERS_PATH = "import_files/res_users.csv"
-ID_MAP_PATH = "import_files/ipi_odoo_id_mapping_short.csv"
-ERROR_PATH = "error_files/"
-ACTORS_ERR_FILE = ERROR_PATH + "actors_error.csv"
+from .parameters import ACTOR_IMPORT_FILE_DICT, USERS_PATH, ID_MAP_PATH, ACTORS_ERR_FILE
 
 
 class ResPartner:
@@ -67,7 +61,8 @@ class ResPartner:
         return result
 
     def import_data(self):
-        with open(ACTORS_PATH, 'r', encoding='utf8') as csvfile:
+        import_file = ACTOR_IMPORT_FILE_DICT[self.import_type]
+        with open(import_file, 'r', encoding='utf8') as csvfile:
             spam_reader = csv.DictReader(
                 csvfile, delimiter=self.file_delimiter, quotechar='"')
             error_file = open(ACTORS_ERR_FILE, 'w')
@@ -163,7 +158,8 @@ class ResPartner:
         print("\n Partners have been imported!")
 
     def setting_parent(self):
-        with open(ACTORS_PATH, 'r', encoding='utf8') as csvfile:
+        import_file = ACTOR_IMPORT_FILE_DICT[self.import_type]
+        with open(import_file, 'r', encoding='utf8') as csvfile:
             spam_reader = csv.DictReader(
                 csvfile, delimiter=self.file_delimiter, quotechar='"')
             file_line = 1
@@ -250,39 +246,57 @@ class ResPartner:
     """
 
     def integrate_data(self):
-        with open(ACTORS_PATH, 'r', encoding='utf8') as csvfile:
+        import_file = ACTOR_IMPORT_FILE_DICT[self.import_type]
+        with open(import_file, 'r', encoding='utf8') as csvfile:
+
             spam_reader = csv.DictReader(
                 csvfile, delimiter=self.file_delimiter, quotechar='"')
             file_line = 1
             for row in spam_reader:
                 file_line += 1
                 try:
-                    # finding the partner
-                    if row['active'] == "True":
-                        continue
-                    odoo_id = f"__odoo_id_{row['id']}"
-                    rp_obj = self.client.ResPartner
-                    partner = rp_obj.search([('ref', "=", odoo_id)], limit=1)
-                    if not partner:
-                        print(f"Partner {row['name']} not found!")
-                        continue
-                    partner = rp_obj.browse(partner[0])
-                    # preparing data to update
-                    partner_type = self.return_type(row['type'])
-                    vals = {
-                        'active': self.format_boolean(row['active']),
-                        # 'type': partner_type,
-                        # 'is_company': self.format_boolean(row['is_company']),
-                        # 'is_condominium': self.format_boolean(row['is_apartment_building']),
-                        # 'is_competitor': self.format_boolean(row['is_competitor']),
-                    }
-                    partner.write(vals)
-                    # partner[0].type_company = partner_type
+                    if self.import_type == 'dm1104':
+                        self._integrate_partners(row)
+                    if self.import_type == 'dpr162':
+                        self._map_dpr162(row)
                     print(f"{file_line}")
                 except Exception as e:
-                    print(f"Line {file_line}: {e.faultCode}")
+                    print(f"Line {file_line}: {e}")
 
         print("\n Partners have been updated!")
+
+    def _map_dpr162(self, row):
+        rp_obj = self.client.ResPartner
+        partner = rp_obj.search([('name', "=", row['company_name'])], limit=1)
+        if not partner:
+            print(f"Partner {row['company_name']} not found!")
+            return True
+        partner = rp_obj.browse(partner[0])
+        vals = {'ipi162_id': int(row['id'])}
+        partner.write(vals)
+
+    def _integrate_partners(self, row):
+        # finding the partner
+        if row['active'] == "True":
+            return True
+        odoo_id = f"__odoo_id_{row['id']}"
+        rp_obj = self.client.ResPartner
+        partner = rp_obj.search([('ref', "=", odoo_id)], limit=1)
+        if not partner:
+            print(f"Partner {row['name']} not found!")
+            return True
+        partner = rp_obj.browse(partner[0])
+        # preparing data to update
+        partner_type = self.return_type(row['type'])
+        vals = {
+            'active': self.format_boolean(row['active']),
+            # 'type': partner_type,
+            # 'is_company': self.format_boolean(row['is_company']),
+            # 'is_condominium': self.format_boolean(row['is_apartment_building']),
+            # 'is_competitor': self.format_boolean(row['is_competitor']),
+        }
+        partner.write(vals)
+        # partner[0].type_company = partner_type
 
     def return_type(self, cell):
         if cell == 'sede-amministrativa':

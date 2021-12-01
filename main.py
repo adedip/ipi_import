@@ -53,11 +53,10 @@ def import_data(import_type):
 
     # AssetDecree(CLIENT, company, import_type).map_machine_type()
     # AssetDecree(CLIENT, company, import_type).map_identification()
-    AssetDecree(CLIENT, company, import_type).import_data()
+    # AssetDecree(CLIENT, company, import_type).import_data()
 
-    ### INTEGRATIONS ###
-
-    # ResPartner(CLIENT, company, import_type).integrate_data()
+    # INTEGRATIONS ######
+    ResPartner(CLIENT, company, import_type).integrate_data()
     # ResPartner(CLIENT, company, import_type).clean_data()
 
     # AssetDecree(CLIENT, company, import_type).integrate_data()
@@ -66,6 +65,6 @@ def import_data(import_type):
 if __name__ == "__main__":
     print("Beginning import data...\n")
     check_modules()
-    import_type = ['dm1104', 'dpr162', 'dpr462'][0]
+    import_type = ['dm1104', 'dpr162', 'dpr462'][1]
     import_data(import_type)
     logging.info("\nFinito ;)")
