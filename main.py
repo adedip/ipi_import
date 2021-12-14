@@ -64,7 +64,7 @@ def import_data(import_type):
 
 if __name__ == "__main__":
     print("Beginning import data...\n")
-    check_modules()
-    import_type = ['dm1104', 'dpr162', 'dpr462'][1]
+    # check_modules()
+    import_type = ['all', 'dm1104', 'dpr162', 'dpr462'][0]
     import_data(import_type)
     logging.info("\nFinito ;)")

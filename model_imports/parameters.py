@@ -8,12 +8,21 @@ ERROR_PATH = "error_files/"
 # ACTORS_PATH = "import_files/all_actors.csv"
 
 ACTOR_IMPORT_FILE_DICT = {
-    'dm1104': IMPORT_PATH + "pi_10_partner_exp_short.csv",
+    'all': IMPORT_PATH + "ipi_10_partner_set_parent.csv",
+    'dm1104': IMPORT_PATH + "**.csv",
     'dpr162': IMPORT_PATH + "dpr162_actors.csv",
-    # 'dpr462': IMPORT_PATH + "dpr_462_machines_short.csv",
+    'dpr462': IMPORT_PATH + "**.csv",
+}
+
+ACTOR_FIELD_DICT =  {
+    'all': 'name',
+    'dm1104': 'company_name',
+    'dpr162': 'company_name',
+    'dpr462': 'company_name',
 }
 
 ACTORS_ERR_FILE = ERROR_PATH + "actors_error.csv"
+# PARTNER_MAP_FILE = MAPPING_PATH + "ipi_odoo_id_mapping_DEF.csv"
 
 USERS_PATH = "import_files/res_users.csv"
 ID_MAP_PATH = "import_files/ipi_odoo_id_mapping_short.csv"
