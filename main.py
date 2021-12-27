@@ -10,6 +10,7 @@ import logging
 from model_imports.res_partner import ResPartner
 from model_imports.geolocation import GeoLocation
 from model_imports.asset_decree import AssetDecree
+from model_imports.dynamic_audit import DynamicAudit
 
 # setting erppeek
 
@@ -55,10 +56,11 @@ def import_data(import_type):
     # AssetDecree(CLIENT, company, import_type).map_identification()
     # AssetDecree(CLIENT, company, import_type).import_data()
 
-    # INTEGRATIONS ######
-    ResPartner(CLIENT, company, import_type).integrate_data()
-    # ResPartner(CLIENT, company, import_type).clean_data()
+    DynamicAudit(CLIENT, company, import_type).import_data()
 
+    # INTEGRATIONS ######
+    # ResPartner(CLIENT, company, import_type).integrate_data()
+    # ResPartner(CLIENT, company, import_type).clean_data()
     # AssetDecree(CLIENT, company, import_type).integrate_data()
 
 

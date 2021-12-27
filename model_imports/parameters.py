@@ -2,7 +2,13 @@
 IMPORT_PATH = "import_files/"
 ERROR_PATH = "error_files/"
 
-# GEOLOCATION
+# AUDITS
+AUDITS_IMPORT_FILE_DICT = {
+    'all': "***",
+    'dm1104': IMPORT_PATH + "dm1104_audits_short.csv",
+    'dpr162': IMPORT_PATH + "***",
+    'dpr462': IMPORT_PATH + "***.csv",
+}
 
 # PARTNERS
 # ACTORS_PATH = "import_files/all_actors.csv"

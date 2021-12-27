@@ -1,51 +1,9 @@
 import csv
-
-MAIN_PATH = "import_files/"
-MACH_TYPE_FILE = MAIN_PATH + "machine_types.csv"
-MACH_IDENTIFICATION = MAIN_PATH + "machines_specific_details.csv"
-
-ERROR_PATH = "error_files/"
-MACH_ERR_FILE = ERROR_PATH + "machines_error.csv"
-
-IMPORT_FILE_DICT = {
-    'dm1104': MAIN_PATH + "customer_machines_medium.csv",
-    'dpr162': MAIN_PATH + "dpr_162_machines_short.csv",
-    'dpr462': MAIN_PATH + "dpr_462_machines_short.csv",
-    'odoo': MAIN_PATH + "odoo10_macchine_export.csv",
-}
-
-ID_FIELD_DICT = {
-    'dm1104': 'ipi_id',
-    'dpr162': 'ipi162_id',
-    'dpr462': 'ipi462_id',
-}
-
-MACH_TYPE_DICT = {
-    'Piattaforme': 'PeopleLiftingDm1104',
-    'Sollevatori': 'PeopleLiftingDm1104',
-    'Carro': 'PeopleLiftingDm1104',
-    'Scala': 'PeopleLiftingDm1104',
-    'Ponti': 'PeopleLiftingDm1104',
-    'Carrelli': 'EquipmentLiftingDm1104',
-    'Idroestrattori': 'EquipmentLiftingDm1104',
-    'Gru': 'EquipmentLiftingDm1104',
-    'Autogru': 'EquipmentLiftingDm1104',
-    'Altro': 'EquipmentLiftingDm1104',
-    'Recipienti Gas e vapore d\'acqua': 'PressureEquipmentDm1104',
-    'Generatori di vapore con superficie riscaldata fino a 300 mq': 'PressureEquipmentDm1104',
-    'Generatori di vapore con superficie riscaldata oltre i 300 mq': 'PressureEquipmentDm1104',
-    'Tubazioni': 'PressureEquipmentDm1104',
-    'Impianti di Riscaladamento oltre 116 kW': 'PressureEquipmentDm1104',
-    'Messa a terra': 'GroundingDpr462',
-    'Scariche atmosferiche': 'AtmosphericDischargesDpr462',
-    'Pericolo esplosione': 'DangerExplosionDpr462',
-    'Passo e contatto': 'StepContactDpr462',
-    'Impianto Elettrico': 'LiftsDpr162',
-    'Impianto Idraulico': 'LiftsDpr162',
-}
+from .parameters import ACTOR_IMPORT_FILE_DICT, USERS_PATH, ID_MAP_PATH, \
+    ACTORS_ERR_FILE, ID_FIELD_DICT,AUDITS_IMPORT_FILE_DICT
 
 
-class AssetDecree:
+class DynamicAudit:
     def __init__(self, client, company, import_type):
         self.client = client
         self.company = company
@@ -57,57 +15,55 @@ class AssetDecree:
             ('ipi_id', "=", ipi_id )])
         return client[0] if client else False
 
-    def get_many2one(self, model, ipi_id):
-        return getattr(self.client, model).search([
-            ('ipi_id', "=", ipi_id)], limit=1)
+    def get_m2o_name(self, model, name, field='name'):
+        """Returns the ID of the searched item """
+        domain = [(field, "=", name)]
+        res_model = getattr(self.client, model)
+        if 'active' in res_model._fields:
+            domain += ['|', ('active', '=', True), ('active', '=', False)]
+        result = getattr(self.client, model).search(domain, limit=1)
+        return result[0] if result else False
 
     def import_data(self):
-        # TODO: SELECT THE TYPE OF IMPORT!!
-        import_type = ['dm1104', 'dpr162', 'dpr462'][1]
-        id_prefix = [0, 100000, 20000][1]
-        import_file = IMPORT_FILE_DICT[import_type]
+        import_file = AUDITS_IMPORT_FILE_DICT[self.import_type]
 
         with open(import_file, 'r', encoding='utf8') as csvfile:
             spam_reader = csv.DictReader(
                 csvfile, delimiter=self.file_delimiter, quotechar='"')
-            error_file = open(MACH_ERR_FILE, 'w')
-            error_writer = csv.DictWriter(error_file, delimiter=',', quotechar='"',
-                                          fieldnames=spam_reader.fieldnames + ['error'])
-            error_writer.writeheader()
+            # error_file = open(MACH_ERR_FILE, 'w')
+            # error_writer = csv.DictWriter(error_file, delimiter=',', quotechar='"',
+            #                               fieldnames=spam_reader.fieldnames + ['error'])
+            # error_writer.writeheader()
             usage_dict, su_obj = {}, self.client.SectorUsage
             file_line = 1
             for row in spam_reader:
                 file_line += 1
                 try:
-                    # checking if the asset already exists
-                    rp_obj = self.client.AssetDecrees
-                    raise UserError(_("Reeview this part, error of merging!!"))
-                    ipi_id = id_prefix + int(row['id'])
-                    if rp_obj.search([('ipi_id', "=", ipi_id)]):
-                        print('Asset ' + row['factory_number'] + " already exists!")
+                    # checking if the asset already exists and its clients
+                    da_obj = self.client.DynamicAudit
+                    ipi_field = ID_FIELD_DICT[self.import_type]
+                    ipi_id = f"__{ipi_field}_id_{row['id']}"
+                    if da_obj.search([('ipi_id', "=", ipi_id)]):
+                        print('Audit ' + row['factory_number'] + " already exists!")
                         continue
-
-                    #getting the related partner and addresses
-                    customer = self.get_many2one('ResPartner', row['customer_id'])
+                    customer = self.get_m2o_name('ResPartner', row['customer_id'], ipi_field)
                     if not customer:
                         print("No client")
                         continue
-                    customer_obj = self.client.ResPartner.browse([('id', '=', customer[0])])
 
-                    # city, province and region depending on the import
-                    city_param = 'city' if import_type == 'dm1104' else 'location_city_id'
-                    city = self.get_many2one('ResCity', city_param)
+                    # city, province, region and other fields computation
+                    city = self.get_m2o_name('ResCity', row['customer_id'])
                     if city:
                         city_name = self.client.ResCity.browse(city[0]).name
-                    region_param = 'region' if import_type == 'dm1104' else 'location_region_id'
-                    region = self.get_many2one('ResCountryRegion', region_param)
-                    province_param = 'province' if import_type == 'dm1104' else 'location_province_id'
-                    province = self.get_many2one('ResCountryState', province_param)
+                    region_param = 'region' if self.import_type == 'dm1104' else 'location_region_id'
+                    region = self.get_m2o_name('ResCountryRegion', region_param)
+                    province_param = 'province' if self.import_type == 'dm1104' else 'location_province_id'
+                    province = self.get_m2o_name('ResCountryState', province_param)
 
                     # TODO: maybe error, check machiine type config , check fields mapping!!
-                    detail = self.get_many2one('DetailConfig', row['machine_type_detail_id'])
+                    detail = self.get_m2o_name('DetailConfig', row['machine_type_detail_id'])
                     # TODO: identification pass via tariffplan
-                    identification = self.get_many2one('DetailIdentification', row['machine_type_detail_id'])
+                    identification = self.get_m2o_name('DetailIdentification', row['machine_type_detail_id'])
                     equipment_type = self.client.DetailConfig.browse(detail[0]).equipment_type if detail else False
                     if isinstance(row['usage'],str):
                         usage = usage_dict.get(row['usage'], False)
@@ -115,7 +71,80 @@ class AssetDecree:
                             usage_id = su_obj.search([('name', '=', row['usage'])])
                             usage = su_obj.browse(usage_id[0]) if usage_id else su_obj.create({'name': row['usage']})
                             usage_dict[row['usage']] = usage
+                    asset = self.get_m2o_name('AssetDecrees', row['machine_id'], 'ipi_id')
+                    if not asset:
+                        print(f"Asset {row['machine_id']} not found!")
+                        continue
+                    asset_id = self.client.AssetDecrees.browse(asset)
+                    xx = False
                     vals = ({
+                        'machine_id': asset_id.id,
+                        # 'holder_id': xx,
+                        'customer_id': asset_id.customer_id.id,
+                        # 'supplier_id': xx,
+                        # 'engeener_id': xx,
+                        'audit_date': self.format_date(row['audit_planned_start']),
+                        #'audit_planned_end': xx,
+                        'audit_date': self.format_date(row['audit_deadline_at']),
+                        # 'audit_started_at': xx,
+                        # 'audit_ended_at': xx,
+                        # 'report_file_signed_dt': xx,
+                        # 'report_file_signed': xx,
+                        'street': row['audit_location_address'],
+                        'street': row['audit_location_address'],
+                        'audit_location_zipcode': xx,
+                        'audit_location_region': xx,
+                        'audit_location_province': xx,
+                        'audit_location_city': xx,
+                        'audit_location_company': xx,
+                        'audit_regime': xx,
+                        'audit_protocol': xx,
+                        'audit_protocol_date': xx,
+                        'type_audit_code': xx,
+                        'customer_user_id': xx,
+                        'supplier_inspection_user_id': xx,
+                        'notes': xx,
+                        'audit_request_file': xx,
+                        'holder_nomination_file': xx,
+                        'comunication_file': xx,
+                        'report_file': xx,
+                        'report_number': xx,
+                        'supplier_rate': xx,
+                        'holder_rate': xx,
+                        'invoice_date': xx,
+                        'invoice_number': xx,
+                        'invoice_amount': xx,
+                        'gross_margin_percentage': xx,
+                        'report_maintenance_status': xx,
+                        'report_principal_organs_status': xx,
+                        'report_behavior_in_test': xx,
+                        'report_configurations_in_test': xx,
+                        'report_is_available': xx,
+                        'report_is_not_available_causes': xx,
+                        'report_note_5': xx,
+                        'machine_type_id': xx,
+                        'machine_type_detail_id': xx,
+                        'machine_tariffplan_id': xx,
+                        'state': xx,
+                        'contract_id': xx,
+                        'manager_id': xx,
+                        'bu_id': xx,
+                        'previous_audit_id_suspended': xx,
+                        'previous_audit_id_rejected': xx,
+                        'previous_audit_id_break': xx,
+                        'price_first_audit': xx,
+                        'price_next_audit': xx,
+                        'report_note_1': xx,
+                        'report_note_2': xx,
+                        'report_note_3': xx,
+                        'report_note_4': xx,
+                        'invoiced': xx,
+                        'overcharge_startup': xx,
+                        'overcharge_integrity': xx,
+                        'purchase_order': xx,
+                        'edit_notes': xx,
+                        'audit_location_address_n': xx,
+
                         'name': f"Machine num: {row['factory_number']}",
                         'ipi_id': ipi_id,
                         'customer_id': customer_obj[0].parent_id if customer_obj[0].parent_id else customer[0],
@@ -215,6 +244,9 @@ class AssetDecree:
                     row['error'] = e.faultCode
                     error_writer.writerow(row)
 
+    def format_date(self, date, type="date"):
+        return date if date not in ['NULL', '0000-00-00'] else False
+
     def map_machine_type(self):
         with open(MACH_TYPE_FILE, 'r', encoding='utf8') as csvfile:
             spam_reader = csv.DictReader(
@@ -247,7 +279,7 @@ class AssetDecree:
                 if not mtype_id:
                     # TODO: create or skipping? now it is creating new ones
                     print("Machine Indentification {} was not found!".format(row['description']))
-                    detail = self.get_many2one('DetailConfig', int(row['machine_type_detail_id']))
+                    detail = self.get_m2o_name('DetailConfig', int(row['machine_type_detail_id']))
                     di_obj.create({
                         'name': row['description'],
                         'ipi_id': int(row['id']),
@@ -281,8 +313,8 @@ class AssetDecree:
                         print(f"Asset {row['factory_number']} not found!")
                         continue
                     asset = ad_obj.browse(asset[0])
-                    detail = self.get_many2one('DetailConfig', row['machine_type_detail_id'])
-                    identification = self.get_many2one('DetailIdentification', row['machine_tariffplan_id'])
+                    detail = self.get_m2o_name('DetailConfig', row['machine_type_detail_id'])
+                    identification = self.get_m2o_name('DetailIdentification', row['machine_tariffplan_id'])
                     equipment_type = self.client.DetailConfig.browse(detail[0]).equipment_type if detail else False
                     # preparing data to update
                     # serial_list = self.get_serial_number(row['serial_number'])
