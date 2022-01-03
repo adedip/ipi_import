@@ -10,6 +10,19 @@ AUDITS_IMPORT_FILE_DICT = {
     'dpr462': IMPORT_PATH + "***.csv",
 }
 
+AUDITS_STATE_DICT = {
+    '-2': 1,  # 'In attesa ratifica contratto',
+    '-1': 1,  # 'Verifica senza contratto',
+    '0': 1,  # 'FROZEN',
+    '1': 1,  # 'Verifica creata',
+    '2': 1,  # 'Upload doc tit. funzione e del',
+    '3': 2,  # 'Verificatore associato',
+    '4': 20,  # 'Verbale di verifica inserito',
+    '5': 6,  # 'Verifica chiusa',
+    '6': 2,  # 'Verifica sospesa',
+    '7': 6,  # 'Verifica negativa',
+}
+
 # PARTNERS
 # ACTORS_PATH = "import_files/all_actors.csv"
 
