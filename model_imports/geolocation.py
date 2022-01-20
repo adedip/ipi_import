@@ -13,10 +13,6 @@ class GeoLocation:
         self.company = company
         self.import_type = import_type
 
-    def map_cities(self):
-        """TODO: Try to match ipi_id to cities in Odoo."""
-        pass
-
     def map_regions(self):
         with open(REGIONS_FILE, 'r', encoding='utf8') as csvfile:
             spam_reader = csv.DictReader(

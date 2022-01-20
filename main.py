@@ -43,7 +43,7 @@ def check_modules():
 def import_data(import_type):
     company = CLIENT.ResCompany.browse([('name', '=', 'Ipi S.r.l.')], limit=1)
     # mapping geolocation
-    # GeoLocation(CLIENT, company, import_type).map_cities()
+    GeoLocation(CLIENT, company, import_type).map_cities()
     # GeoLocation(CLIENT, company, import_type).map_regions()
     # GeoLocation(CLIENT, company, import_type).map_provinces()
 
@@ -56,7 +56,7 @@ def import_data(import_type):
     # AssetDecree(CLIENT, company, import_type).map_identification()
     # AssetDecree(CLIENT, company, import_type).import_data()
 
-    DynamicAudit(CLIENT, company, import_type).import_data()
+    # DynamicAudit(CLIENT, company, import_type).import_data()
 
     # INTEGRATIONS ######
     # ResPartner(CLIENT, company, import_type).integrate_data()

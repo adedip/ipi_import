@@ -91,10 +91,11 @@ class DynamicAudit:
                         result_id = 2
                     asset_id = self.client.AssetDecrees.browse(asset)
                     xx = False
-
+                    child_location = asset_id.child_location_id
                     vals = ({
                         'ipi_id': ipi_id,
                         'equipment_record_id': asset_id.id,
+                        'equipment_address': child_location.id if child_location else False,
                         'audit_record_ref': '%s,%s' % ('asset.decrees', asset_id.id),
                         'audit_type_id': AUDIT_TYPE_DICT[row['type_audit_code']],
                         # 'holder_id': xx,
